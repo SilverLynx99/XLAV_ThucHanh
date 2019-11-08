@@ -89,31 +89,31 @@ int ve_histogram(const Mat& input)
 	return -1;
 }
 
-int main()
-{
-	Mat src, dst;
-
-	/// Load image
-	src = imread("abc.jpg", 1);
-	//namedWindow("calcHist Demo");
-	//imshow("calcHist Demo", src);
-
-	//waitKey(0);
-
-	if (!src.data)
-	{
-		return -1;
-	}
-
-	cout << src.channels() << endl;
-	drawHistogram(src, dst);
-
-	/// Display
-	namedWindow("calcHist Demo");
-	imshow("calcHist Demo", dst);
-
-	waitKey(0);
-
-	return 0;
-}
+//int main()
+//{
+//	Mat src, dst;
+//
+//	/// Load image
+//	src = imread("abc.jpg", 1);
+//	//namedWindow("calcHist Demo");
+//	//imshow("calcHist Demo", src);
+//
+//	//waitKey(0);
+//
+//	if (!src.data)
+//	{
+//		return -1;
+//	}
+//
+//	cout << src.channels() << endl;
+//	drawHistogram(src, dst);
+//
+//	/// Display
+//	namedWindow("calcHist Demo");
+//	imshow("calcHist Demo", dst);
+//
+//	waitKey(0);
+//
+//	return 0;
+//}
 

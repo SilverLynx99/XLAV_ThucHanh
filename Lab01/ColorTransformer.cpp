@@ -2,7 +2,30 @@
 
 int ColorTransformer::ChangeBrighness(const Mat& sourceImage, Mat& destinationImage, short b)
 {
-	return 0;
+	if (sourceImage.channels() == 3)
+		destinationImage.create(sourceImage.size(), CV_8UC3);
+	else 
+		destinationImage.create(sourceImage.size(), CV_8UC1);
+
+	if (sourceImage.data)
+	{
+		int rows = sourceImage.rows;
+		int cols = sourceImage.cols;
+		int i, j, z;
+		for (i = 0; i < rows; i++)
+		{
+			for (j = 0; j < cols; j++)
+			{
+				for (z = 0; z < sourceImage.channels(); z++)
+				{
+					int intensity = sourceImage.at<Vec3b>(i, j)[z];
+					destinationImage.at<Vec3b>(i, j)[z] = saturate_cast<uchar>(1.0 * sourceImage.at<Vec3b>(i, j)[z] + b);
+				}
+			}
+		}
+		return 1;
+	}
+	else return 0;
 }
 
 int ColorTransformer::ChangeContrast(const Mat& sourceImage, Mat& destinationImage, float c)
