@@ -70,3 +70,17 @@ public:
 	~ColorTransformer();
 };
 
+/*
+Hàm thống kê phân bố của ảnh sourceImage và lưu lại trong ảnh destinationImage
+Tham số:
+	sourceImage : Ảnh dùng để tìm histogram. Có thể là ảnh màu hoặc ảnh xám
+	destinationImage: Ảnh lưu lại phân bố của ảnh gốc.
+		Nếu là ảnh xám, lưu lại bằng một kênh màu
+		Nếu là ảnh màu, lưu lại bằng ba kênh theo thứ tự BGR.
+Hàm trả về:
+	1: nếu thực thi thành công
+	0: Nếu không thành công
+*/
+int CalculateHistogram(const Mat& sourceImage, Mat& destinationImage);
+
+int drawHistogram(const Mat& sourceImage, Mat& destinationImage);
