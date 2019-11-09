@@ -2,17 +2,146 @@
 
 int ColorTransformer::ChangeBrighness(const Mat& sourceImage, Mat& destinationImage, short b)
 {
-	return 0;
+	if (sourceImage.channels() == 3)
+		destinationImage.create(sourceImage.size(), CV_8UC3);
+	else 
+		destinationImage.create(sourceImage.size(), CV_8UC1);
+
+	if (sourceImage.data)
+	{
+		int rows = sourceImage.rows;
+		int cols = sourceImage.cols;
+		int i, j, z;
+		for (i = 0; i < rows; i++)
+		{
+			for (j = 0; j < cols; j++)
+			{
+				for (z = 0; z < sourceImage.channels(); z++)
+				{
+					int intensity = sourceImage.at<Vec3b>(i, j)[z];
+					destinationImage.at<Vec3b>(i, j)[z] = saturate_cast<uchar>(1.0 * sourceImage.at<Vec3b>(i, j)[z] + b);
+				}
+			}
+		}
+		return 1;
+	}
+	else return 0;
 }
 
-int ColorTransformer::ChangeContrast(const Mat& sourceImage, Mat& destinationImage, float c)
+int ChangeContrast(const Mat& sourceImage, Mat& destinationImage, float c)
 {
-	return 0;
+	if (Sourceimage.empty())
+	{
+		return 0;
+	}
+	int row = Destinationimage.rows;
+	int col = Destinationimage.cols;
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			for (int o = 0; o < 3; o++)
+			{
+				int check = Destinationimage.at<Vec3b>(j, i)[o] * c;
+				Destinationimage.at<Vec3b>(j, i)[o] *= c; // Áp dụng công thức tính độ phân giải (f'(x,y) = f(x,y) * c 
+				if (check > 255) // Kiểm tra xem giá trị màu có vượt quá 255 hay không
+				{
+					Destinationimage.at<Vec3b>(j, i)[o] = 255;
+				}
+			}
+		}
+
+	}
+	return 1;
+
 }
 
-int ColorTransformer::HistogramEqualization(const Mat& sourceImage, Mat& destinationImage)
+void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 {
-	return 0;
+
+	int **hist;
+	int row = Srcimage.rows;
+	int col = Srcimage.cols;
+	int nChannel = Srcimage.channels();
+	int temp;
+
+	Srcimage.copyTo(Dstimage);
+	Dstimage.setTo(0);
+
+	hist = (int**)calloc(nChannel, sizeof(int*));
+	for (int i = 0; i < nChannel; i++)
+	{
+		hist[i] = (int*)calloc(256, sizeof(int));
+
+		memset(hist[i], 0, 256 * sizeof(int));
+	} // Tạo mảng chứa ma trận Histogram với chiều rộng là 256
+
+
+	for (int i = 0; i < row; i++)
+	{
+		uchar *pRow = Srcimage.ptr<uchar>(i);
+		for (int j = 0; j < col; j++, pRow += nChannel)
+		{
+			for (int o = 0; o < nChannel; o++)
+			{
+				for (int u = 1; u <= 255; u++)
+				{
+					if (pRow[o] < u) // Kiểm tra xem giá trị màu tại vị trí (i,j) của kênh màu thứ o có nằm trong khoảng bin của histogram không 
+					{
+						hist[o][u - 1]++; // Tăng số lần xuất hiện nếu giá trị màu nằm trong khoảng bin nhất định của histogram
+						break;
+					}
+				}
+			}
+
+		}
+	}
+	// Tính histogram của ảnh
+
+	double **p = NULL;
+	p = (double**)calloc(nChannel, sizeof(double*));
+	for (int i = 0; i < nChannel; i++)
+	{
+		p[i] = (double*)calloc(256, sizeof(double));
+	} // Khai báo ma mảng chứa xác suất của từng bin trong histogram
+
+
+	for (int i = 0; i < nChannel; i++)
+	{
+		for (int j = 0; j < 256; j++)
+		{
+			p[i][j] = double(hist[i][j]) / double((col*row));
+		}
+	} // Tính xác suất của các bin trong histogram
+
+	for (int i = 0; i < row; i++)
+	{
+		uchar *pRow = Srcimage.ptr<uchar>(i);
+		for (int j = 0; j < col; j++, pRow += nChannel)
+		{
+			for (int o = 0; o < nChannel; o++)
+			{
+				uchar *p2 = Dstimage.ptr<uchar>(i, j);
+				for (int u = 0; u <= 255; u++)
+				{
+					temp = p2[o] + floor(p[o][u] * 255.0);
+					p2[o] += floor(p[o][u] * 255.0);
+					if (temp > 255)
+					{
+						p2[o] = 255;
+						break;
+					}
+
+					if (pRow[o] < u)
+					{
+						break;
+					}
+				}
+			}
+
+		}
+	}
+
 }
 
 // Vẽ ảnh màu
