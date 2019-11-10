@@ -31,7 +31,7 @@ int Converter::GrayScale2RGB(const Mat& sourceImage, Mat& destinationImage)
 {
 	if (sourceImage.data)
 	{
-		// cvtColor(sourceImage, destinationImage, CV_GRAY2BGR);
+		cvtColor(sourceImage, destinationImage, COLOR_GRAY2BGR);
 		return 1;
 	}
 	else
