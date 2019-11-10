@@ -47,8 +47,32 @@ int ColorTransformer::HistogramEqualization1(const Mat& sourceImage, Mat& destin
 
 float ColorTransformer::CompareImage(const Mat& image1, Mat& image2)
 {
+	// Tính lược đồ màu
+	Mat img1_hist, img2_hist;
+	CalculateHistogram(image1, img1_hist);
+	CalculateHistogram(image2, img2_hist);
 
-	return 0.0f;
+	// Chuẩn hóa histogram
+	normalize(img1_hist, img1_hist, 0, 1, NORM_MINMAX, -1, Mat());
+	normalize(img2_hist, img2_hist, 0, 1, NORM_MINMAX, -1, Mat());
+
+	//// Tính hệ số tương quan giữa img1_hist và img2_hist
+	///Using intersection algorithm
+	double compare_number = 0;
+	for (int x = 0; x < img1_hist.rows; x++)
+	{
+		for (int y = 0; y < img1_hist.cols; y++)
+		{
+			if (img1_hist.at<float>(x, y) >= img2_hist.at<float>(x, y))
+				compare_number += img2_hist.at<float>(x, y);
+			else
+				compare_number += img1_hist.at<float>(x, y);
+		}
+	}
+
+
+	
+	return compare_number;
 }
 
 ColorTransformer::ColorTransformer()

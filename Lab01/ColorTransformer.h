@@ -62,6 +62,7 @@ public:
 		image2 : ảnh thứ hai
 	Hàm trả về:
 		độ đo sự tương đồng giữa hai ảnh
+		Chọn độ đo Chi-Squared
 	*/
 	float CompareImage(const Mat& image1, Mat& image2);
 	

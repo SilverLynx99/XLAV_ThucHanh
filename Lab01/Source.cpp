@@ -91,10 +91,11 @@ int ve_histogram(const Mat& input)
 
 //int main()
 //{
-//	Mat src, dst;
+//	Mat src,src1, dst, dst1;
 //
 //	/// Load image
-//	src = imread("abc.jpg", 1);
+//	src = imread("lena.jpg", 1);
+//	src1 = imread("lena_hsv1.jpg", 1);
 //	//namedWindow("calcHist Demo");
 //	//imshow("calcHist Demo", src);
 //
@@ -107,10 +108,13 @@ int ve_histogram(const Mat& input)
 //
 //	cout << src.channels() << endl;
 //	drawHistogram(src, dst);
+//	drawHistogram(src1, dst1);
 //
 //	/// Display
 //	namedWindow("calcHist Demo");
 //	imshow("calcHist Demo", dst);
+//	namedWindow("calcHist Demo1");
+//	imshow("calcHist Demo1", dst1);
 //
 //	waitKey(0);
 //

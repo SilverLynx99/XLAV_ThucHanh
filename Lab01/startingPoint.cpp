@@ -42,40 +42,74 @@ int main(int argc, char **argv)
 	//cmd = argv[1];
 	//inpPath = argv[2];
 	//if (argc == 4)
-	//	cmdArg = argv[3];
+	//	if (cmd == "--compare")
+	//		cmdArg = argv[3];
+	//	else
+	//		secondInpPath = argv[3];
+
 
 	// Xác định chế độ để gọi hàm
 	int catchError = 1;
 	short mode = -1, commandArgument = -1;
 	//catchError = identifyCommand(cmd, cmdArg, mode, commandArgument);
+
 	//if (catchError == -1)
 	//{
 	//	cerr << "Fail to parse arguments" << endl;
 	//	return -1;
 	//}
+
+	Mat src, des;
+	mode = 9;
+	commandArgument = -200;
+	if (mode != 9) {
+		// Mở file và kiểm tra
+		src = imread("lena.jpg", 1);
 		
-	// Mở file và kiểm tra
-	 Mat src = imread("lena.jpg", 1);
-	//Mat src = imread("noise_lena.jpg", 1);
-	if (!src.data)
-	{
-		cerr << "Could not open or find the image" << endl;
-		return -1;
+		if (!src.data)
+		{
+			cerr << "Could not open or find the image" << endl;
+			return -1;
+		}
+
+		// Hiển thị ảnh đầu vào
+		namedWindow("Inputimage");
+		imshow("Inputimage", src);
 	}
+	else {
+		src = imread("lena.jpg", 1);
+		//src = imread(inpPath, 1);
 
-	// Hiển thị ảnh đầu vào
-	namedWindow("Inputimage");
-	imshow("Inputimage", src);
+		if (!src.data)
+		{
+			cerr << "Could not open or find the image" << endl;
+			return -1;
+		}
 
-	// Tạo ảnh kết quả
-	Mat des;
+		// Hiển thị ảnh đầu vào
+		namedWindow("image1");
+		imshow("image1", src);
+
+		// des = imread(secondInpPath, 1);
+		des = imread("lena_hsv.jpg" , 1);
+
+		if (!des.data)
+		{
+			cerr << "Could not open or find the image" << endl;
+			return -1;
+		}
+
+		// Hiển thị ảnh đầu vào
+		namedWindow("image2");
+		imshow("image2", des);
+	}
+	
 
 	// Khởi tạo 2 đối tượng để thực hiện các phép biến đổi màu
 	Converter Cvert;
 	ColorTransformer cTrans;
 
-	mode = 5;
-	commandArgument = -200;
+	double Intersection;
 	switch (mode)
 	{
 	case 1:
@@ -88,7 +122,8 @@ int main(int argc, char **argv)
 		break;
 	case 3:
 		cout << "Chuc nang 3" << endl;
-		catchError = Cvert.Convert(src, des, 2);
+		// catchError = Cvert.Convert(src, des, 2);
+		cvtColor(src, des, COLOR_BGR2HSV);
 		break;
 	case 4:
 		cout << "Chuc nang 4" << endl;
@@ -111,8 +146,11 @@ int main(int argc, char **argv)
 		cout << "Chuc nang 8" << endl;
 		break;
 	case 9:
-		//catchError = cTrans.CompareImage(src, des);
 		cout << "Chuc nang 9" << endl;
+		Intersection = cTrans.CompareImage(src, des);
+		cout << "The Intersection metric of two image : " << Intersection << endl;
+		waitKey(0);
+		return 0;
 		break;
 	default:
 		break;
@@ -127,7 +165,7 @@ int main(int argc, char **argv)
 	// Hiển thị ảnh kết quả
 	namedWindow("Output image");
 	imshow("Output image", des);
-	// imwrite("lena_hsv.jpg", des);
+	imwrite("lena_hsv1.jpg", des);
 
 	waitKey(0);
 	return 0;
