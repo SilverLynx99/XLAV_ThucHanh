@@ -5,7 +5,7 @@ int Blur::BlurImage(const Mat& sourceImage, Mat& destinationImage, int kWidth, i
 	Convolution cCon;
 	vector<float> abc;
 	Mat tempImg;
-
+	
 	if (method == 0) {
 		
 		// Find kernel
@@ -38,7 +38,6 @@ int Blur::BlurImage(const Mat& sourceImage, Mat& destinationImage, int kWidth, i
 			abc.push_back(value);
 		}
 
-		
 		destinationImage = sourceImage.clone();
 
 		cCon.SetKernel(abc, kWidth, kHeight);

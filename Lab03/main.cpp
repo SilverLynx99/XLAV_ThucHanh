@@ -7,7 +7,6 @@
 
 #include "EdgeDetector.h"
 #include "Blur.h"
-#include "Convolution.h"
 
 using namespace std;
 using namespace cv;
@@ -33,42 +32,43 @@ int identifyCommand(string cmd, string cmdArg, short& mode, short& commandArgume
 
 int main(int argc, char** argv)
 {
-	//// Kiểm tra số lượng tham số truyền vào 
-	//if (argc <= 1) {
-	//	cerr << "Not enough argument passed!" << endl;
-	//	return -1;
-	//}
+	// Kiểm tra số lượng tham số truyền vào 
+	if (argc <= 1) {
+		cerr << "Not enough argument passed!" << endl;
+		return -1;
+	}
 
-	//string cmd, inpPath, cmdArg;
-	//cmd = argv[1];
-	//inpPath = argv[2];
-	//if (argc == 4)
-	//	cmdArg = argv[3];
-	//	
+	string cmd, inpPath, cmdArg;
+	cmd = argv[1];
+	inpPath = argv[2];
+	if (argc == 4)
+		cmdArg = argv[3];
+		
 
 	// Xác định chế độ để gọi hàm
 	int catchError = 1;
 	short mode = -1, commandArgument = -1;
-	// catchError = identifyCommand(cmd, cmdArg, mode, commandArgument);
+	catchError = identifyCommand(cmd, cmdArg, mode, commandArgument);
 
-	//if (catchError == -1)
-	//{
-	//	cerr << "Fail to parse arguments" << endl;
-	//	return -1;
-	//}
+	if (catchError == -1)
+	{
+		cerr << "Fail to parse arguments" << endl;
+		return -1;
+	}
 
 	Mat src, des;
 
 	// Mở file và kiểm tra
-	//src = imread("nhan3.jpg", 1);
-	//src = imread("sample2.jpg", 1);
-	src = imread("lena.jpg", 1);
+	src = imread(inpPath, 1);
 
 	if (!src.data)
 	{
 		cerr << "Could not open or find the image" << endl;
 		return -1;
 	}
+
+	// Chuyển đổi về ảnh xám
+	cvtColor(src, src, COLOR_BGR2GRAY);
 
 	// Hiển thị ảnh đầu vào
 	namedWindow("Inputimage");
@@ -77,19 +77,16 @@ int main(int argc, char** argv)
 	// Khởi tạo 3 đối tượng
 	EdgeDetector eDect;
 	Blur blur;
-	cvtColor(src, src, COLOR_RGB2GRAY);
-	cout << src.channels() << endl;
-	mode = 6;
-	commandArgument = 3;
+	
 	switch (mode)
 	{
-	case 1:
+	case 1:// mean
 		catchError = blur.BlurImage(src, des, commandArgument, commandArgument, 0);
 		break;
-	case 2:
+	case 2://median
 		catchError = blur.BlurImage(src, des, commandArgument, commandArgument, 1);
 		break;
-	case 3:
+	case 3:// gaussian
 		catchError = blur.BlurImage(src, des, commandArgument, commandArgument, 2);
 		break;
 	case 4:

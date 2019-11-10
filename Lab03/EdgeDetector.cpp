@@ -7,7 +7,7 @@ int EdgeDetector::DetectEdge(const Mat& sourceImage, Mat& destinationImage, int 
 	{
 	case 1:
 	{
-		int threshold = 60;
+		int threshold = 80;
 		Mat imgX, imgY;
 		Convolution cCon_x, cCon_y;
 		float kernel_x[] = { -1,-2, -1, 0, 0, 0, 1, 2, 1 };
@@ -42,7 +42,7 @@ int EdgeDetector::DetectEdge(const Mat& sourceImage, Mat& destinationImage, int 
 		break;
 	case 2:
 	{
-		int threshold = 60;
+		int threshold = 80;
 		Mat imgX, imgY;
 		Convolution cCon_x, cCon_y;
 		float kernel_x[] = { -1,-1, -1, 0, 0, 0, 1, 1, 1 };
@@ -77,7 +77,7 @@ int EdgeDetector::DetectEdge(const Mat& sourceImage, Mat& destinationImage, int 
 		break;
 	case 3:
 	{
-		int threshold = 30;
+		int threshold = 25;
 		Mat img;
 		Convolution cCon;
 		float kernel_laplace[] = { 0, 1, 0, 1, -4, 1, 0, 1, 0 };

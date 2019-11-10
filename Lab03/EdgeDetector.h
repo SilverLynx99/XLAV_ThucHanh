@@ -1,9 +1,6 @@
 ﻿#pragma once
-#include<opencv2/opencv.hpp>
-#include<iostream>
 #include "Convolution.h"
-using namespace std;
-using namespace cv;
+
 class EdgeDetector
 {
 public:
