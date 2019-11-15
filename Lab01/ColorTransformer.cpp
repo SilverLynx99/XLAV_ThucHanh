@@ -1,4 +1,4 @@
-﻿\\#include "ColorTransformer.h"
+﻿#include "ColorTransformer.h"
 
 int ColorTransformer::ChangeBrighness(const Mat& sourceImage, Mat& destinationImage, short b)
 {
@@ -28,45 +28,45 @@ int ColorTransformer::ChangeBrighness(const Mat& sourceImage, Mat& destinationIm
 	else return 0;
 }
 
-int ChangeContrast(const Mat& sourceImage, Mat& destinationImage, float c)
+int ColorTransformer::ChangeContrast(const Mat& sourceImage, Mat& destinationImage, float c)
 {
-	if (Sourceimage.empty())
+	destinationImage = sourceImage.clone();
+	if (sourceImage.empty())
 	{
 		return 0;
 	}
-	int row = Destinationimage.rows;
-	int col = Destinationimage.cols;
+	int row = destinationImage.rows;
+	int col = destinationImage.cols;
 	for (int i = 0; i < row; i++)
 	{
 		for (int j = 0; j < col; j++)
 		{
 			for (int o = 0; o < 3; o++)
 			{
-				int check = Destinationimage.at<Vec3b>(j, i)[o] * c;
-				Destinationimage.at<Vec3b>(j, i)[o] *= c; // Áp dụng công thức tính độ phân giải (f'(x,y) = f(x,y) * c 
+				uchar tempVal = sourceImage.at<Vec3b>(j, i)[o];
+				float check = (float)tempVal * c;
 				if (check > 255) // Kiểm tra xem giá trị màu có vượt quá 255 hay không
 				{
-					Destinationimage.at<Vec3b>(j, i)[o] = 255;
+					destinationImage.at<Vec3b>(j, i)[o] = 255;
 				}
+				destinationImage.at<Vec3b>(j, i)[o] = saturate_cast<uchar>(check); // Áp dụng công thức tính độ phân giải (f'(x,y) = f(x,y) * c 
 			}
 		}
 
 	}
 	return 1;
-
 }
 
-void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
+int ColorTransformer::HistogramEqualization(const Mat& sourceImage, Mat& destinationImage)
 {
-
-	int **hist;
-	int row = Srcimage.rows;
-	int col = Srcimage.cols;
-	int nChannel = Srcimage.channels();
+	int** hist;
+	int row = sourceImage.rows;
+	int col = sourceImage.cols;
+	int nChannel = sourceImage.channels();
 	int temp;
 
-	Srcimage.copyTo(Dstimage);
-	Dstimage.setTo(0);
+	sourceImage.copyTo(destinationImage);
+	destinationImage.setTo(0);
 
 	hist = (int**)calloc(nChannel, sizeof(int*));
 	for (int i = 0; i < nChannel; i++)
@@ -79,7 +79,7 @@ void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 
 	for (int i = 0; i < row; i++)
 	{
-		uchar *pRow = Srcimage.ptr<uchar>(i);
+		const uchar* pRow = sourceImage.ptr<uchar>(i);
 		for (int j = 0; j < col; j++, pRow += nChannel)
 		{
 			for (int o = 0; o < nChannel; o++)
@@ -98,7 +98,7 @@ void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 	}
 	// Tính histogram của ảnh
 
-	double **p = NULL;
+	double** p = NULL;
 	p = (double**)calloc(nChannel, sizeof(double*));
 	for (int i = 0; i < nChannel; i++)
 	{
@@ -110,18 +110,18 @@ void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 	{
 		for (int j = 0; j < 256; j++)
 		{
-			p[i][j] = double(hist[i][j]) / double((col*row));
+			p[i][j] = double(hist[i][j]) / double((col * row));
 		}
 	} // Tính xác suất của các bin trong histogram
 
 	for (int i = 0; i < row; i++)
 	{
-		uchar *pRow = Srcimage.ptr<uchar>(i);
+		const uchar* pRow = sourceImage.ptr<uchar>(i);
 		for (int j = 0; j < col; j++, pRow += nChannel)
 		{
 			for (int o = 0; o < nChannel; o++)
 			{
-				uchar *p2 = Dstimage.ptr<uchar>(i, j);
+				uchar* p2 = destinationImage.ptr<uchar>(i, j);
 				for (int u = 0; u <= 255; u++)
 				{
 					temp = p2[o] + floor(p[o][u] * 255.0);
@@ -141,20 +141,93 @@ void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 
 		}
 	}
-	delete(p);
+	return 0;
 }
 
 // Vẽ ảnh màu
-int ColorTransformer::HistogramEqualization1(const Mat& sourceImage, Mat& destinationImage)
+int ColorTransformer::drawHistogram(const Mat& sourceImage, Mat& destinationImage)
 {
+	// Thiết lập các thông số cho ảnh histogram
+	int histSize = 256;
+	int hist_w = 512, hist_h = 400;
+	int bin_w = cvRound((double)hist_w / histSize);
 
-	return 0;
+	Mat tempHistImg(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
+	Mat calculatedHist;
+	// Tính phân bố histogram
+	CalculateHistogram(sourceImage, calculatedHist);
+
+	if (sourceImage.channels() == 1)
+	{
+		// Chuẩn hóa để histogram vừa vặn với ảnh
+		normalize(calculatedHist, calculatedHist, 0, tempHistImg.rows, NORM_MINMAX, -1, Mat());
+
+		// Vẽ histogram lên ảnh.
+		for (int i = 1; i < histSize; i++)
+		{
+			line(tempHistImg, Point(bin_w * (i - 1), hist_h - cvRound(calculatedHist.at<float>(i - 1))),
+				Point(bin_w * (i), hist_h - cvRound(calculatedHist.at<float>(i))),
+				Scalar(255, 0, 0), 2, 8, 0);
+		}
+	}
+	else if (sourceImage.channels() == 3)
+	{
+		vector<Mat> bgr_planes;
+		split(calculatedHist, bgr_planes);
+
+		/// Normalize the result to [ 0, histImage.rows ]
+		normalize(bgr_planes[0], bgr_planes[0], 0, tempHistImg.rows, NORM_MINMAX, -1, Mat());
+		normalize(bgr_planes[1], bgr_planes[1], 0, tempHistImg.rows, NORM_MINMAX, -1, Mat());
+		normalize(bgr_planes[2], bgr_planes[2], 0, tempHistImg.rows, NORM_MINMAX, -1, Mat());
+
+		/// Draw for each channel
+		for (int i = 1; i < histSize; i++)
+		{
+			line(tempHistImg, Point(bin_w * (i - 1), hist_h - cvRound(bgr_planes[0].at<float>(i - 1))),
+				Point(bin_w * (i), hist_h - cvRound(bgr_planes[0].at<float>(i))),
+				Scalar(255, 0, 0), 2, 8, 0);
+			line(tempHistImg, Point(bin_w * (i - 1), hist_h - cvRound(bgr_planes[1].at<float>(i - 1))),
+				Point(bin_w * (i), hist_h - cvRound(bgr_planes[1].at<float>(i))),
+				Scalar(0, 255, 0), 2, 8, 0);
+			line(tempHistImg, Point(bin_w * (i - 1), hist_h - cvRound(bgr_planes[2].at<float>(i - 1))),
+				Point(bin_w * (i), hist_h - cvRound(bgr_planes[2].at<float>(i))),
+				Scalar(0, 0, 255), 2, 8, 0);
+		}
+	}
+
+	tempHistImg.copyTo(destinationImage);
+
+	return 1;
 }
 
 float ColorTransformer::CompareImage(const Mat& image1, Mat& image2)
 {
+	// Tính lược đồ màu
+	Mat img1_hist, img2_hist;
+	CalculateHistogram(image1, img1_hist);
+	CalculateHistogram(image2, img2_hist);
 
-	return 0.0f;
+	// Chuẩn hóa histogram
+	normalize(img1_hist, img1_hist, 0, 1, NORM_MINMAX, -1, Mat());
+	normalize(img2_hist, img2_hist, 0, 1, NORM_MINMAX, -1, Mat());
+
+	//// Tính hệ số tương quan giữa img1_hist và img2_hist
+	///Using intersection algorithm
+	double compare_number = 0;
+	for (int x = 0; x < img1_hist.rows; x++)
+	{
+		for (int y = 0; y < img1_hist.cols; y++)
+		{
+			if (img1_hist.at<float>(x, y) >= img2_hist.at<float>(x, y))
+				compare_number += img2_hist.at<float>(x, y);
+			else
+				compare_number += img1_hist.at<float>(x, y);
+		}
+	}
+
+
+	
+	return compare_number;
 }
 
 ColorTransformer::ColorTransformer()

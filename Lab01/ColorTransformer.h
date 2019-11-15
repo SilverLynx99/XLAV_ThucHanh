@@ -44,7 +44,7 @@ public:
 	int HistogramEqualization(const Mat& sourceImage, Mat& destinationImage);
 	
 	/*
-	Hàm cân bằng lược đồ màu tổng quát cho ảnh bất kỳ
+	Hàm vẽ lược đồ màu
 	Tham so :
 		image : ảnh dùng để tính histogram
 		histImage : ảnh histogram
@@ -52,7 +52,7 @@ public:
 		1: Nếu thành công vẽ được histogram
 		0: Nếu không vẽ được histogram
 	*/
-	int HistogramEqualization1(const Mat& sourceImage, Mat& destinationImage);
+	int drawHistogram(const Mat& sourceImage, Mat& destinationImage);
 	
 	
 	/*
@@ -62,6 +62,7 @@ public:
 		image2 : ảnh thứ hai
 	Hàm trả về:
 		độ đo sự tương đồng giữa hai ảnh
+		Chọn độ đo Chi-Squared
 	*/
 	float CompareImage(const Mat& image1, Mat& image2);
 	

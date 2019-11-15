@@ -175,8 +175,8 @@ int GeometricTransformer::Scale(const Mat& srcImage, Mat& dstImage, float sx, fl
 	float rows = srcImage.rows * sx * 1.0;
 	float cols = srcImage.cols * sy * 1.0;
 	int i, j, c;
-	for (i = 0; i < rows; i++)/*rộng 300x2=600 dòng xuống dòng*/ {
-		for (j = 0; j < cols; j++)/*cao 400x2=800 cột đi từng ô*/ {
+	for (i = 0; i < rows-round(sx); i++)/*rộng 300x2=600 dòng xuống dòng*/ {
+		for (j = 0; j < cols-round(sy); j++)/*cao 400x2=800 cột đi từng ô*/ {
 			for (c = 0; c < srcImage.channels(); c++) {
 				float x1 = i * 1.0 / sx;
 				float y1 = j * 1.0 / sy;
