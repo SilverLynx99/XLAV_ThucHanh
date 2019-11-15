@@ -1,4 +1,4 @@
-﻿#include "ColorTransformer.h"
+﻿\\#include "ColorTransformer.h"
 
 int ColorTransformer::ChangeBrighness(const Mat& sourceImage, Mat& destinationImage, short b)
 {
@@ -141,7 +141,7 @@ void HistogramEqualization(Mat Srcimage, Mat &Dstimage)
 
 		}
 	}
-
+	delete(p);
 }
 
 // Vẽ ảnh màu
