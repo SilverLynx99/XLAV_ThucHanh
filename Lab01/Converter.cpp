@@ -118,27 +118,32 @@ int Converter::HSV2RGB(const Mat& sourceImage, Mat& destinationImage)
 					G = X;
 					B = 0;
 				}
-				else if (1 <= HPrime && HPrime < 2) {
+				else 
+					if (1 <= HPrime && HPrime < 2) {
 					R = X;
 					G = C;
 					B = 0;
 				}
-				else if (2 <= HPrime && HPrime < 3) {
+				else 
+						if (2 <= HPrime && HPrime < 3) {
 					R = 0;
 					G = C;
 					B = X;
 				}
-				else if (3 <= HPrime && HPrime < 4) {
+				else 
+							if (3 <= HPrime && HPrime < 4) {
 					R = 0;
 					G = X;
 					B = C;
 				}
-				else if (4 <= HPrime && HPrime < 5) {
+				else 
+								if (4 <= HPrime && HPrime < 5) {
 					R = X;
 					G = 0;
 					B = C;
 				}
-				else if (5 <= HPrime && HPrime < 6) {
+				else 
+									if (5 <= HPrime && HPrime < 6) {
 					R = C;
 					G = 0;
 					B = X;

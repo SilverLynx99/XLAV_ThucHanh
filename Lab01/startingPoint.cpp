@@ -166,6 +166,7 @@ int main(int argc, char **argv)
 	// Hiển thị ảnh kết quả
 	namedWindow("Output image");
 	imshow("Output image", des);
+	imwrite("lene_hsv.jpg", des);
 
 	waitKey(0);
 	return 0;
